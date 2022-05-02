@@ -11,13 +11,13 @@ class LoadingButton extends StatefulWidget {
   final LoadingButtonController controller;
 
   /// The callback that is called when the button is tapped or otherwise activated.
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
 
   /// The button's label
     final Widget child;
 
   /// The primary color of the button
-  final Color color;
+  final Color? color;
 
   /// The vertical extent of the button.
   final double height;
@@ -38,21 +38,21 @@ class LoadingButton extends StatefulWidget {
   final double borderRadius;
 
   /// The elevation of the raised button
-  final double elevation;
+  final double? elevation;
 
   /// The color of the button when it is in the error state
-  final Color errorColor;
+  final Color? errorColor;
 
   /// The color of the button when it is in the success state
-  final Color successColor;
+  final Color? successColor;
 
   /// The color of the button when it is disabled
-  final Color disabledColor;
+  final Color? disabledColor;
 
   const LoadingButton(
-      {this.controller,
-        this.onPressed,
-        this.child,
+      {required this.controller,
+        required this.onPressed,
+        required this.child,
         this.color,
         this.height = 50,
         this.width = 300,
@@ -81,9 +81,9 @@ class _LoadingButtonState extends State<LoadingButton>
 
   final duration = const Duration(milliseconds: 850);
 
-  AnimationController loadingAnimController;
-  Animation loadingAnimationScale;
-  Animation loadingAnimationOpacity;
+  late AnimationController loadingAnimController;
+  late Animation loadingAnimationScale;
+  late Animation loadingAnimationOpacity;
 
   @override
   Widget build(BuildContext context) {
@@ -119,11 +119,10 @@ class _LoadingButtonState extends State<LoadingButton>
     return Container(height: widget.height, child: Center(child: btn));
   }
 
-  Widget buildState() {
+  Widget? buildState() {
     switch (_state.value) {
       case LoadingState.idle:
         return widget.child;
-        break;
       case LoadingState.loading:
         return Opacity(
           opacity: loadingAnimationOpacity.value,
@@ -137,14 +136,12 @@ class _LoadingButtonState extends State<LoadingButton>
             ),
           ),
         );
-        break;
       case LoadingState.success:
         return Container(
             alignment: FractionalOffset.center,
             width: widget.iconSize,
             height: widget.iconSize,
             child: Icon(Icons.check, color: widget.valueColor));
-        break;
       case LoadingState.error:
         return Container(
             alignment: FractionalOffset.center,
@@ -154,7 +151,6 @@ class _LoadingButtonState extends State<LoadingButton>
                 Icons.close,
                 color: widget.valueColor)
         );
-        break;
       default:
         return SizedBox(
             height: widget.iconSize,
@@ -168,7 +164,7 @@ class _LoadingButtonState extends State<LoadingButton>
   @override
   void initState() {
     super.initState();
-    widget.controller?.addListeners(_start, _stop, _success, _error, _reset);
+    widget.controller.addListeners(_start, _stop, _success, _error, _reset);
 
     loadingAnimController = AnimationController(duration: duration, vsync: this);
 
@@ -202,9 +198,8 @@ class _LoadingButtonState extends State<LoadingButton>
   }
 
   void _btnPressed() {
-    if(widget.controller != null)
-      _start();
-    widget.onPressed();
+    _start();
+    widget.onPressed!();
   }
 
 
@@ -233,18 +228,18 @@ class _LoadingButtonState extends State<LoadingButton>
   }
 
   void _reset() {
-    if(_state != null && _state.value != LoadingState.stop){
+    if(_state.value != LoadingState.stop){
       _state.sink.add(LoadingState.idle);
     }
   }
 }
 
 class LoadingButtonController {
-  VoidCallback _startListener;
-  VoidCallback _stopListener;
-  VoidCallback _successListener;
-  VoidCallback _errorListener;
-  VoidCallback _resetListener;
+  late VoidCallback _startListener;
+  late VoidCallback _stopListener;
+  late VoidCallback _successListener;
+  late VoidCallback _errorListener;
+  late VoidCallback _resetListener;
 
   void addListeners(
       VoidCallback startListener,
